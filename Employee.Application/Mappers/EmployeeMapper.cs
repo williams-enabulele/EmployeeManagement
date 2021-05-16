@@ -9,7 +9,7 @@ namespace Employee.Application.Mappers
 {
     public class EmployeeMapper
     {
-        private static readonly Lazy<IMapper> Lazy = new Lazy<IMapper>(() =>
+        private static readonly Lazy<IMapper> Lazy = new(() =>
         {
             var config = new MapperConfiguration(cfg =>
             {

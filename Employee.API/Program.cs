@@ -1,3 +1,4 @@
+using Employee.API.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,10 @@ namespace Employee.API
     {
         public static void Main(string[] args)
         {
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var isDevelopment = env == Environments.Development;
+
+            IConfiguration config = ConfigurationSetupExtension.GetConfig(isDevelopment);
             CreateHostBuilder(args).Build().Run();
         }
 

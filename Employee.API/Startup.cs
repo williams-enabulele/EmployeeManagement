@@ -1,3 +1,10 @@
+using Employee.API.Extensions;
+using Employee.Application.Handlers;
+using Employee.Core.Repositories;
+using Employee.Infrastructure.Data;
+using Employee.Infrastructure.Repositories;
+using Employee.Infrastructure.Repositories.Base;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,24 +17,33 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Employee.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public IWebHostEnvironment Environment { get; }
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
             services.AddControllers();
+            services.AddHttpClient();
+            services.AddDbContextAndConfigurations(Environment, Configuration);
+            services.AddAutoMapper(typeof(Startup));
+            services.AddMediatR(typeof(CreateEmployeeHandler).GetTypeInfo().Assembly);
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<IEmployeeRepository, EmployeeRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Employee.API", Version = "v1" });
